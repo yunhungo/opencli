@@ -130,6 +130,8 @@ export function runCli(BUILTIN_CLIS: string, USER_CLIS: string): void {
   for (const [, cmd] of registry) {
     let siteCmd = siteGroups.get(cmd.site);
     if (!siteCmd) { siteCmd = program.command(cmd.site).description(`${cmd.site} commands`); siteGroups.set(cmd.site, siteCmd); }
+    // Skip if this subcommand was already hardcoded (e.g. antigravity serve)
+    if (siteCmd.commands.some((c: Command) => c.name() === cmd.name)) continue;
     const subCmd = siteCmd.command(cmd.name).description(cmd.description);
 
     // Register positional args first, then named options
